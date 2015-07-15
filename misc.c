@@ -53,6 +53,30 @@ void VSHPadGetData(CellPadData *data)
 	if(!vsh_pdata_addr)        // first time, get address
 	{
 		while(pm_start < 0x700000UL)
+	  {
+			if((*(uint64_t*)pm_start == pat[0]) && (*(uint64_t*)(pm_start+8) == pat[1]))
+		  {
+		  	vsh_pdata_addr = (void*)(uint32_t)((int32_t)((*(uint32_t*)(pm_start + 0x234) & 0x0000FFFF) <<16) +
+		  	                                   (int32_t)( *(uint32_t*)(pm_start + 0x244) & 0x0000FFFF));
+		  	
+			  break;
+		  }
+		  
+		  pm_start+=4;
+		}
+	}
+	
+	memcpy(data, vsh_pdata_addr, 0x80);
+} //New algo fixedvy 3141card :)
+
+/*void VSHPadGetData(CellPadData *data)
+{
+	uint32_t pm_start = 0x10000UL;
+	uint64_t pat[2]   = {0x380000077D3F4B78ULL, 0x7D6C5B787C0903A6ULL};
+	
+	if(!vsh_pdata_addr)        // first time, get address
+	{
+		while(pm_start < 0x700000UL)
 	  	{
 			if((*(uint64_t*)pm_start == pat[0]) && (*(uint64_t*)(pm_start+8) == pat[1]))
 		  	{
@@ -66,7 +90,7 @@ void VSHPadGetData(CellPadData *data)
 	}
 	
 	memcpy(data, vsh_pdata_addr, 0x80);
-}
+}*/
 
 /***********************************************************************
 * set/unset io_pad_library init flag
